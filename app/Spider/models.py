@@ -1,5 +1,6 @@
-from app import db   # 实例化的数据库拓展
+from app import db  # 实例化的数据库拓展
 from app.Spider import spider
+
 
 class Book(db.Model):
     __tablename__ = 'books'
@@ -23,15 +24,17 @@ class Book(db.Model):
         }
         return bookInfor
 
+
 class Page(db.Model):
     __tablename__ = 'pages'
     id = db.Column(db.Integer, primary_key=True)
     pages = db.Column(db.Integer, unique=True)
-    books = db.relationship('Book',backref='page')
+    books = db.relationship('Book', backref='page')
+
 
 def makeSQL(num=3):
-    db.drop_all()
-    db.create_all()
+    # db.drop_all()
+    # db.create_all()
     # 爬取相关信息
     print("正在爬取书籍信息")
     DataBase = spider.spider(num)
@@ -39,12 +42,12 @@ def makeSQL(num=3):
     print("正在写入数据库")
     for i in range(num):
         # 创建Pages表实例
-        pages = Page(pages=i+1)
+        pages = Page(pages=i + 1)
         # 创建DataBase表实例
         for j in range(len(DataBase[i])):
             dataBase = Book(ranking=DataBase[i][j][0], bookName=DataBase[i][j][1],
-                        author=DataBase[i][j][2], Type=DataBase[i][j][3],
-                        introduction=DataBase[i][j][4], url=DataBase[i][j][5], page=pages)  # 注意外键的设置给的参数是表实例，而不是数字
+                            author=DataBase[i][j][2], Type=DataBase[i][j][3],
+                            introduction=DataBase[i][j][4], url=DataBase[i][j][5], page=pages)  # 注意外键的设置给的参数是表实例，而不是数字
             db.session.add(pages)
             db.session.add(dataBase)
             db.session.commit()
